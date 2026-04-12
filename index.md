@@ -1,5 +1,3 @@
-# Kaushik Joshi
-
 ## Real engineering starts where the documentation stops.
 
 I work in cloud security and architecture, dealing with systems that have to work under real constraints.
