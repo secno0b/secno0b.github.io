@@ -1,5 +1,3 @@
-# About
-
 ## Real engineering starts where the documentation stops.
 
 I didn’t start in security.
