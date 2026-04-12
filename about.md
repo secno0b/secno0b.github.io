@@ -1,8 +1,24 @@
 # About
 
-I work in cloud security and architecture, currently focused on building and securing enterprise systems on Azure.
+## Real engineering starts where the documentation stops.
 
-Over time, I’ve ended up owning large parts of security across multiple environments, working across platform teams, application teams, and enterprise security groups. That means dealing with everything from identity gaps and network constraints to policy enforcement and vendor tooling.
+I didn’t start in security.
+
+My first job was helpdesk. I spent my days hitting F12 on machines to reimage them and get people back up and running.
+
+Then I moved into a role where I was literally setting up new environments. New building, new floors, unboxing machines, getting everything ready from scratch.
+
+From there I moved into desktop engineering, and eventually into consulting across greenfield and brownfield environments.
+
+That’s where things changed.
+
+You start seeing how systems are actually put together. Not clean builds. Not ideal architectures. Real environments with history, constraints, and decisions that made sense at the time.
+
+Now I work in cloud security and architecture.
+
+But the mindset comes from that journey.
+
+I’ve seen systems from the ground up. From imaging machines to designing architectures that span multiple environments. From fixing individual endpoints to dealing with platform level decisions.
 
 A lot of the work is not clean.
 
@@ -12,13 +28,7 @@ You balance between enforcing controls and keeping systems functional.
 
 Most of the time, there isn’t a perfect answer. There’s only a decision and its tradeoffs.
 
-I spend a lot of time:
-- Designing secure architectures that still work in production  
-- Building and enforcing Azure policies across environments  
-- Evaluating security tools beyond their demos  
-- Fixing things that don’t behave the way they’re supposed to  
-
-This site is where I document those experiences.
+This site is where I write about those decisions.
 
 Not as best practices.  
 But as real outcomes.
