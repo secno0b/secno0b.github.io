@@ -1,0 +1,20 @@
+---
+layout: default
+---
+
+<a href="{{ '/' | relative_url }}" class="back-link">&larr; back</a>
+
+<div class="post-header fade-up">
+  {% if page.section_label %}
+  <div class="section-label">{{ page.section_label }}</div>
+  {% endif %}
+  <h1>{{ page.title }}</h1>
+  {% if page.subtitle %}
+  <p class="subtitle">{{ page.subtitle }}</p>
+  {% endif %}
+  <span class="date">{{ page.date | date: "%Y.%m.%d" }}</span>
+</div>
+
+<div class="post-body fade-up fade-up-1">
+  {{ content }}
+</div>
