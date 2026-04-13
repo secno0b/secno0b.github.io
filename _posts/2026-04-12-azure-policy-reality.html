@@ -1,0 +1,120 @@
+---
+layout: post
+title: "53 Azure Policies. 33 Survived."
+subtitle: "What happens when compliance frameworks meet production architecture"
+section_label: "Azure / Cloud Security"
+date: 2026-04-12
+tags: [azure, policy, cloud-security]
+---
+
+We started a policy enforcement project with a list of 53 Azure policies. They were well chosen. Aligned with CIS benchmarks, covered identity, networking, data protection, compute hardening. On paper, it was a thorough security posture.
+
+After reviewing each one against our actual architecture, 20 didn't survive. Not because they were wrong. Because they assumed an architecture that didn't exist.
+
+<div class="stat-row fade-up">
+  <div class="stat-card">
+    <div class="number">53</div>
+    <div class="label">Proposed</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">33</div>
+    <div class="label">Assigned</div>
+  </div>
+  <div class="stat-card">
+    <div class="number">20</div>
+    <div class="label">Cut or Deferred</div>
+  </div>
+</div>
+
+## Where the collision happens
+
+Azure Policy assumes your environment follows a standard pattern. Public endpoints are optional. Authentication is uniform. Services deploy to supported regions with default configurations. Real environments rarely look like that.
+
+We had API Management running in External VNet mode with regional VNet integration and no public ingress to backend services. Several proposed policies would have broken that entire integration pattern by enforcing network restrictions that conflicted with how APIM actually communicates with its backends in that topology.
+
+We had services depending on external partner integrations that required public network access. A blanket "deny public access" policy on those resources would have taken production integrations offline.
+
+<div class="pullquote">
+The gap isn't between your policies and the benchmarks. The gap is between the benchmarks and your architecture.
+</div>
+
+## The ghost policy
+
+During a CrowdStrike Falcon Cloud Security deployment, Bicep templates kept failing at management group scope. No clear error, no obvious misconfiguration. After debugging through Azure Resource Manager logs, the root cause turned out to be a <code>SystemHidden</code> Azure Policy restricting deployments to the West Europe region.
+
+<div class="code-block">
+  <div class="dots">
+    <span class="red"></span>
+    <span class="yellow"></span>
+    <span class="green"></span>
+  </div>
+<pre>
+# The policy wasn't visible in the standard portal view.
+# Had to query programmatically to find it:
+
+az policy assignment list \
+  --scope "/providers/Microsoft.Management/managementGroups/{mg-id}" \
+  --query "[?policyDefinitionId contains 'locationRestriction']"
+
+# Result: SystemHidden assignment blocking West Europe
+# Not in our policy inventory. Not in the compliance blade.
+# A ghost policy blocking a legitimate security tool deployment.
+</pre>
+</div>
+
+That's the kind of thing that doesn't show up in compliance frameworks or policy review spreadsheets. A policy you didn't assign, restricting a region you didn't expect, blocking a security tool deployment.
+
+## Audit vs. deny
+
+The pressure is always to move from audit to deny. Audit feels weak. Deny feels like you're actually enforcing something. But deny on the wrong policy against the wrong service breaks production workloads with zero warning and no rollback path except removing the policy entirely.
+
+We categorized every policy into three buckets:
+
+<div class="category-cards">
+  <div class="category-card">
+    <span class="category-badge enforce">ENFORCE</span>
+    <p>Clear control, safe to deny, no integration risk. Applied immediately.</p>
+  </div>
+  <div class="category-card">
+    <span class="category-badge audit">AUDIT</span>
+    <p>Valid control, but enforcement would break integrations or existing architecture. Stays in audit.</p>
+  </div>
+  <div class="category-card">
+    <span class="category-badge na">N/A</span>
+    <p>Doesn't fit our architecture at all. Removed from scope.</p>
+  </div>
+</div>
+
+For API Management and Function Apps specifically, several controls stayed in audit mode permanently. That's not a compromise. That's architecture-aware security. The alternative is a deny policy that either gets bypassed with an exemption (defeating the purpose) or breaks a production workload (defeating the business).
+
+## The tracker
+
+We built a comparison tool that takes the original CSV of 53 proposed policies and cross-references it against the review comments and final assignments. Every policy gets a status, a rationale, and a link to the specific architectural constraint that drove the decision.
+
+<div class="code-block">
+  <div class="dots">
+    <span class="red"></span>
+    <span class="yellow"></span>
+    <span class="green"></span>
+  </div>
+<pre>
+Policy: "API Management services should disable public network access"
+Status: AUDIT ONLY
+Reason: APIM in External VNet mode requires public endpoint
+        for portal and developer portal access.
+        Backend ingress is already restricted via NSG + VNet integration.
+        Denying would break external developer onboarding.
+
+Policy: "Function Apps should require HTTPS only"
+Status: ENFORCE
+Reason: No integration dependency on HTTP. Safe to deny.
+</pre>
+</div>
+
+This is the artifact that matters. Not the count of policies applied, but the documented reasoning for every decision. When an auditor asks why something is in audit mode instead of deny, you point to the rationale, not a spreadsheet of green checkmarks.
+
+## The takeaway
+
+Policy enforcement is not a coverage game. It's a precision game. 33 well-understood, correctly scoped policies that you can actually enforce are worth more than 53 that look good on a compliance report but break your systems or sit unenforced.
+
+If you can't explain why a policy is in audit mode, you don't understand your architecture well enough. And if you can explain it, write it down. That rationale is the real security artifact, not the policy assignment itself.
