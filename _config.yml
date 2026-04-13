@@ -1,0 +1,12 @@
+title: Kaushik Joshi
+description: Real engineering starts where the documentation stops.
+url: "https://secno0b.github.io"
+baseurl: ""
+
+markdown: kramdown
+permalink: /:year/:month/:day/:title.html
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
