@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
+</head>
+<body>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="{{ '/' | relative_url }}" class="logo">KJ</a>
+      <div class="nav-links">
+        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Posts</a>
+        <a href="{{ '/about' | relative_url }}">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="site-content">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>Kaushik Joshi / secno0b</span>
+      <div class="footer-links">
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+        <a href="https://github.com/secno0b" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
